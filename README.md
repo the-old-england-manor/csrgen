@@ -29,8 +29,7 @@ It's long and easy to fat-finger. `csrgen example.com` makes it easier.
 
 ## Requirements
 
-- Go 1.26+ (to build or `go install`)
-- No runtime dependencies (openssl is not required)
+- Go 1.27.1+ (to build or `go install`)
 
 ## Install
 
