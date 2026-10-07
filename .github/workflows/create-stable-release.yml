@@ -1,0 +1,59 @@
+name: Create Stable Release
+run-name: Release ${{ github.ref_name }} triggered by @${{ github.actor }}
+
+permissions:
+  contents: write
+
+on:
+  push:
+    tags:
+      - 'v*.*.*' # Semantic versioning tags
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  release:
+    name: Test, Build, Release
+    runs-on: ubuntu-latest
+    env:
+      BIN_DIR: ${{ github.workspace }}/bin/
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup Go
+        uses: actions/setup-go@v6
+        with:
+          go-version-file: 'go.mod'
+          cache-dependency-path: 'go.sum'
+
+      - name: Download Dependencies
+        run: go mod download
+        shell: bash
+
+      - name: Test
+        run: make test
+        shell: bash
+
+      - name: Build All Targets
+        run: make build-all -j VERSION=${{ github.ref_name }}
+        shell: bash
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: csrgen
+          path: ${{ env.BIN_DIR }}
+          retention-days: 1
+
+      - name: Create Release ${{ github.ref_name }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          TAG_NAME=${{ github.ref_name }}
+          gh release create "$TAG_NAME" \
+            ${BIN_DIR}* \
+            --generate-notes \
+            --latest
