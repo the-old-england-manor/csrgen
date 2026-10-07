@@ -1,6 +1,6 @@
 module github.com/the-old-england-manor/csrgen
 
-go 1.26.1
+go 1.27.1
 
 require github.com/stretchr/testify v1.12.1
 
