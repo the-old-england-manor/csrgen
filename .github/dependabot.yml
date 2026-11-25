@@ -8,3 +8,21 @@ updates:
       prefix: 'ci'
     assignees:
       - 'algo7'
+
+  - package-ecosystem: 'gomod'
+    directory: '/'
+    schedule:
+      interval: 'weekly'
+    # go.mod lists the indirect modules too, and the version on each line is the
+    # one the build uses, so update them along with the direct ones.
+    allow:
+      - dependency-type: 'all'
+    groups:
+      go:
+        patterns:
+          - '*'
+    commit-message:
+      prefix: 'build'
+      include: 'scope'
+    assignees:
+      - 'algo7'
